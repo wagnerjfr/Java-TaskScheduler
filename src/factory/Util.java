@@ -14,45 +14,43 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 public class Util {
-	
-	private static final String ERROR_LOAD_FILE = "Some problem while loading properties file. Message: ";
-	
-	private static Properties prop;
 
-	public static long delay_scheduler;
-	public static double cpu_bound;
-	public static String[] tasks;
-	public static boolean print_cpu_low;
+    private static final String ERROR_LOAD_FILE = "Some problem while loading properties file. Message: ";
 
-	public static String getCurrentHour() {
-		return new SimpleDateFormat("HH:mm:ss").format(new Date());
-	}
-	
-	
-	
-	/**
-	 * Function to get CPU usage as percentage
-	 * @return double
-	 * @throws Exception
-	 */
-	final public static double getProcessCPU() throws Exception {
-		
-	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
-	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
-	    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
+    private static Properties prop;
 
-	    if (list.isEmpty())
-	    	return Double.NaN;
+    public static long delay_scheduler;
+    public static double cpu_bound;
+    public static String[] tasks;
+    public static boolean print_cpu_low;
 
-	    Attribute att = (Attribute)list.get(0);
-	    Double value  = (Double)att.getValue();
+    public static String getCurrentHour() {
+        return new SimpleDateFormat("HH:mm:ss").format(new Date());
+    }
 
-	    if (value == -1.0)
-	    	return Double.NaN;
-	    
-	    return ((int)(value * 1000) / 10.0);
-	}
-	
+    /**
+     * Function to get CPU usage as percentage
+     * @return double
+     * @throws Exception
+     */
+    final public static double getProcessCPU() throws Exception {
+
+        MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
+        ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
+        AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
+
+        if (list.isEmpty())
+            return Double.NaN;
+
+        Attribute att = (Attribute)list.get(0);
+        Double value  = (Double)att.getValue();
+
+        if (value == -1.0)
+            return Double.NaN;
+
+        return ((int)(value * 1000) / 10.0);
+    }
+
     /**
      * Method to load file properties
      * @throws IOException
@@ -61,39 +59,34 @@ public class Util {
      * @throws InstantiationException 
      */
     final public static void loadProperties() {
-    	prop = new Properties();
+        prop = new Properties();
 
-    	InputStream input = null;
+        InputStream input = null;
 
-    	try {
+        try {
+            input = new FileInputStream("config.properties");
+            prop.load(input);
+            delay_scheduler = Long.parseLong(prop.getProperty("delay_scheduler_seconds")) * 1000 + 10; //+10 milliseconds
+            cpu_bound = Double.parseDouble(prop.getProperty("cpu_bound_percent"));
+            tasks = prop.getProperty("list_of_tasks").split(TaskFactory.TASKS_SEPARATOR);
+            TaskFactory.testTasksClassNames(tasks);
+            print_cpu_low = Boolean.parseBoolean(prop.getProperty("print_cpu_low"));
 
-    		input = new FileInputStream("config.properties");
-
-    		prop.load(input);
-
-    		delay_scheduler = Long.parseLong(prop.getProperty("delay_scheduler_seconds")) * 1000 + 10; //+10 milliseconds
-    		cpu_bound = Double.parseDouble(prop.getProperty("cpu_bound_percent"));
-    		
-    		tasks = prop.getProperty("list_of_tasks").split(TaskFactory.TASKS_SEPARATOR);
-    		TaskFactory.testTasksClassNames(tasks);
-    		
-    		print_cpu_low = Boolean.parseBoolean(prop.getProperty("print_cpu_low"));
-
-		} catch (Exception e) {
-			System.err.println(ERROR_LOAD_FILE + e.getMessage());
-			System.exit(-1);
-		} catch (NoClassDefFoundError er) {
-			System.err.println(ERROR_LOAD_FILE + er.getMessage());
-			System.exit(-1);
-		}
-    	finally {
-    		if (input != null) {
-    			try {
-					input.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-    		}
-    	}
+        } catch (Exception e) {
+            System.err.println(ERROR_LOAD_FILE + e.getMessage());
+            System.exit(-1);
+        } catch (NoClassDefFoundError er) {
+            System.err.println(ERROR_LOAD_FILE + er.getMessage());
+            System.exit(-1);
+        }
+        finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

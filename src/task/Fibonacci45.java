@@ -1,6 +1,6 @@
 /**
  * class Fibonacci45: 
- *  
+ *
  * @author Wagner Franchin
  */
 
@@ -11,11 +11,8 @@ import factory.Util_Functions;
 
 public class Fibonacci45 extends Task {
 
-	@Override
-	public String executeTask() {
-		
-		return Util_Functions.runFibonacci(45);
-		
-	}
-
+    @Override
+    public String executeTask() {
+        return Util_Functions.runFibonacci(45);
+    }
 }
