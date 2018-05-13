@@ -51,7 +51,7 @@ public abstract class Task extends TaskCallable implements Runnable {
         print_task.append(this.getClass().getSimpleName()).append("-ID:").append(id).append("]");
 
         print_task = sFather.append(print_task);
-        System.out.println(Util.getCurrentHour() + " S " + print_task.toString() + " started -> CPU: " + Util.getProcessCPU() + " (Queue Size: " + Scheduler.getInstance().getQueueSize() + ")");
+        System.out.println(Util.getCurrentHour() + " S " + print_task.toString() + " started -> CPU: " + Util.getProcessCPU() + " (Queue Size: " + Scheduler.INSTANCE.getQueueSize() + ")");
         long start = System.currentTimeMillis();
         String future = (String) execute(this);
         long end = System.currentTimeMillis();
@@ -61,7 +61,7 @@ public abstract class Task extends TaskCallable implements Runnable {
         Thread.sleep(delay);
 
         for (Task dependecy : queuedDependecy) {
-            Scheduler.getInstance().addQueue(dependecy);
+            Scheduler.INSTANCE.addQueue(dependecy);
         }
     }
 
@@ -188,7 +188,7 @@ public abstract class Task extends TaskCallable implements Runnable {
                 try {
                     
                     Thread.sleep(task.getFixedRate());
-                    Scheduler.getInstance().addQueue(task);
+                    Scheduler.INSTANCE.addQueue(task);
                     
                 } catch (InterruptedException e) {
                 	bstop = true;

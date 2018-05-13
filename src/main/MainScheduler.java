@@ -17,14 +17,20 @@ public class MainScheduler {
 
         Util.loadProperties();
         //Starting the Scheduler thread
-        new Thread(Scheduler.getInstance(), "shceduler_thread").start();
+        Runnable runScheduler = new Runnable() {
+            @Override
+            public void run() {
+                Scheduler.INSTANCE.run();
+            }
+        };
+        new Thread(runScheduler, "scheduler_thread").start();
 
         //create tasks
         for(String name : Util.tasks){
             try {
                 Task t = TaskFactory.create(name);
                 if (t != null)
-                    Scheduler.getInstance().addQueue(t);
+                    Scheduler.INSTANCE.addQueue(t);
 
             } catch (Exception e) {
                 System.err.println("Some problem while creating tasks. Exception message: " + e.getMessage());

@@ -13,26 +13,17 @@ import java.util.Queue;
 import factory.Task;
 import factory.Util;
 
-final public class Scheduler implements Runnable {
+/**
+ * Singleton class using enum
+ *
+ */
+public enum Scheduler {
+    INSTANCE;
 
     private static int taskID = 0;
 
     private Queue<Task> queue;
     private boolean bStop;
-
-    /**
-     * SINGLETON -----------------------------------------------------
-     */
-    private static class SchedulerSingleton {
-        private static final Scheduler INSTANCE = new Scheduler();
-    }
-
-    public static Scheduler getInstance() {
-        return SchedulerSingleton.INSTANCE;
-    }
-    /**
-     * ----------------------------------------------------------------
-     */
 
     private Scheduler() {
         queue = new LinkedList<Task>();
@@ -50,7 +41,6 @@ final public class Scheduler implements Runnable {
         }
     }
 
-    @Override
     public void run() {
 
         try {
